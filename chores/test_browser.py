@@ -2,6 +2,8 @@
 import os
 import asyncio
 import sys
+from io import BytesIO
+from PIL import Image
 from pathlib import Path
 from unittest import skipUnless
 
@@ -46,6 +48,7 @@ class BrowserTests(ChannelsLiveServerTestCase):
             admin.get_by_label("Assignee").select_option(label="Alex")
             admin.get_by_label("Due date").fill(timezone.localdate().isoformat())
             admin.get_by_label("Requires approval").check()
+            admin.get_by_label("Requires photo").check()
             admin.get_by_role("button", name="Save chore", exact=True).click()
             expect(admin.get_by_role("heading", name="Browser dishes", exact=True)).to_be_visible()
             chore_url = admin.url
@@ -58,6 +61,10 @@ class BrowserTests(ChannelsLiveServerTestCase):
             member.get_by_role("button", name="Apply filters").click()
             member.get_by_role("link", name="Browser dishes", exact=True).click()
             member.get_by_label("Completion note (optional)").fill("First attempt")
+            image = BytesIO()
+            Image.new("RGB", (8, 8), "green").save(image, "PNG")
+            proof = {"name": "proof.png", "mimeType": "image/png", "buffer": image.getvalue()}
+            member.get_by_label("Completion photo (JPEG, PNG, WebP; up to 5 MB)").set_input_files(proof)
             member.get_by_role("button", name="Submit completion", exact=True).click()
             expect(member.get_by_text("Submitted on time", exact=True)).to_be_visible()
             admin.reload()
@@ -65,6 +72,7 @@ class BrowserTests(ChannelsLiveServerTestCase):
             admin.get_by_role("button", name="Reject", exact=True).click()
             member.reload()
             expect(member.get_by_text("Rejection reason: Clean the edges", exact=True)).to_be_visible()
+            member.get_by_label("Completion photo (JPEG, PNG, WebP; up to 5 MB)").set_input_files(proof)
             member.get_by_role("button", name="Submit completion", exact=True).click()
             admin.goto(chore_url)
             admin.get_by_role("button", name="Approve", exact=True).click()

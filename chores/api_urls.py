@@ -30,7 +30,7 @@ for action, serializer, example, summary in [
     ("submit", S.SubmissionInput, {"note": "All done"}, "Submit completion (multipart for photos)"),
     ("approve", S.EmptyInput, {}, "Approve pending submission (admin)"),
     ("reject", S.ReasonInput, {"reason": "Clean the edges"}, "Reject with required reason (admin)"),
-    ("undo", S.EmptyInput, {}, "Undo own unreviewed completion within 15 minutes"),
+    ("undo", S.EmptyInput, {}, "Undo own completion within 15 minutes"),
     ("reactivate", S.NoteInput, {"note": "Needs another pass"}, "Reactivate completed chore (admin)"),
     ("catchup", S.CatchupInput, {"choice": "skip"}, "Resolve missed recurrence (admin)"),
     ("pause", S.PauseInput, {"reason": "Member away"}, "Pause reminders indefinitely (admin)"),

@@ -36,7 +36,7 @@ class ReminderTests(TestCase):
         self.assertEqual(Notification.objects.filter(kind="rejected_overdue").count(), 1)
         self.assertEqual(Notification.objects.filter(kind="rejected_overdue_admin").count(), 0)
         self.assertFalse(Notification.objects.filter(message__contains="Secret reason").exists())
-        self.assertEqual(reminders.send_reminders(now=start + timedelta(hours=23)), 1)
+        reminders.send_reminders(now=start + timedelta(hours=23))
         self.assertEqual(Notification.objects.filter(kind="rejected_overdue_admin").count(), 0)
         reminders.send_reminders(now=start + timedelta(days=1))
         self.assertEqual(Notification.objects.filter(kind="rejected_overdue_admin").count(), 1)

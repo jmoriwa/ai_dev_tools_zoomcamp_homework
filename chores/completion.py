@@ -102,8 +102,8 @@ def undo(*, actor, chore):
     attempt = latest_attempt(chore)
     if actor.pk != chore.assignee_id:
         raise PermissionDenied
-    if not attempt or attempt.submitted_by_id != actor.pk or attempt.status not in {"completed", "pending"} or timezone.now() >= attempt.submitted_at + timedelta(minutes=15):
-        raise ValidationError("The 15-minute undo window has ended or the submission was reviewed.")
+    if not attempt or attempt.submitted_by_id != actor.pk or attempt.status not in {"completed", "pending", "approved"} or timezone.now() >= (chore.completed_at or attempt.submitted_at) + timedelta(minutes=15):
+        raise ValidationError("The 15-minute undo window has ended or the submission cannot be undone.")
     attempt.undone_at = timezone.now()
     attempt.save(update_fields=["undone_at"])
     chore.status = Chore.Status.OPEN

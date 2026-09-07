@@ -73,6 +73,8 @@ def schedule_preview(*, actor):
     result = []
     for series in RecurringSeries.objects.filter(pk__in=series_ids, ended_at__isnull=True):
         last = series.occurrences.order_by("-scheduled_date").first()
+        if not actor.is_household_admin and last.assignee_id != actor.pk:
+            continue
         if last.deleted_at or last.catchup_pending:
             continue
         scheduled = last.scheduled_date + interval(series)

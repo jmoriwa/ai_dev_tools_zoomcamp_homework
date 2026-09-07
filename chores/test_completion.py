@@ -41,6 +41,18 @@ class CompletionTests(TestCase):
             completion.submit(actor=self.member, chore=self.chore)
         self.assertEqual(self.chore.attempts.count(), 1)
 
+    def test_approved_completion_undo_uses_final_completion_time(self):
+        self.chore.requires_approval = True
+        self.chore.save()
+        completion.submit(actor=self.member, chore=self.chore)
+        later = timezone.now() + timedelta(days=1)
+        with patch("django.utils.timezone.now", return_value=later):
+            completion.review(actor=self.admin, chore=self.chore, approve=True)
+        with patch("django.utils.timezone.now", return_value=later + timedelta(minutes=14)):
+            completion.undo(actor=self.member, chore=self.chore)
+        self.chore.refresh_from_db()
+        self.assertEqual(self.chore.status, "open")
+
     def test_review_rejection_resubmission_preserves_attempts(self):
         self.chore.requires_approval = True
         self.chore.requires_photo = True
@@ -75,7 +87,8 @@ class CompletionTests(TestCase):
 
     def test_undo_boundary_and_admin_reactivation(self):
         attempt = completion.submit(actor=self.member, chore=self.chore)
-        with patch("django.utils.timezone.now", return_value=attempt.submitted_at + timedelta(minutes=15)):
+        self.chore.refresh_from_db()
+        with patch("django.utils.timezone.now", return_value=self.chore.completed_at + timedelta(minutes=15)):
             with self.assertRaises(ValidationError):
                 completion.undo(actor=self.member, chore=self.chore)
         with patch("django.utils.timezone.now", return_value=attempt.submitted_at + timedelta(minutes=14, seconds=59)):
@@ -118,7 +131,7 @@ class CompletionTests(TestCase):
         self.assertContains(self.client.get(reverse("chores:history")), "My proof")
         response = self.client.get(reverse("chores:attempt_photo", args=[attempt.pk]))
         self.assertEqual(response.status_code, 200)
-        response.close()
+        self.assertTrue(b"".join(response.streaming_content))
         self.client.force_login(self.other)
         self.assertNotContains(self.client.get(reverse("chores:history")), "My proof")
         self.assertEqual(self.client.get(reverse("chores:attempt_photo", args=[attempt.pk])).status_code, 404)

@@ -2,7 +2,7 @@
 
 Build these 10 tasks in order. Each task includes the database changes, Django logic, pages, and tests needed for that feature. The detailed requirements remain in [plan.md](plan.md).
 
-Starting point: Django is installed, the `config` project exists, and the `chores` app is registered. Product features are not implemented yet.
+Original starting point: Django was installed, the `config` project existed, and the `chores` app was registered. All 10 tasks are now complete. Verification notes under tasks 1–9 describe checks at those milestones; task 10 records final delivery verification.
 
 ## 1. Establish the database and application foundation
 
@@ -122,12 +122,14 @@ Starting point: Django is installed, the `config` project exists, and the `chore
 
 ## 10. Package and verify the end-to-end demo
 
-- [ ] Add a repeatable seed command with one household, a primary admin, secondary admin, several members, one-time and recurring chores, varied categories/priorities, overdue work, pending approval, and completed work.
-- [ ] Write README instructions for environment setup, dependency installation, migrations, seed data, local demo credentials, ASGI server startup, reminder scheduling, tests, and Swagger access.
-- [ ] Run the complete backend and browser test suites. Close gaps in assignment, recurrence, completion/review, undo, audit history, PINs, lockout, sessions, and reminders.
-- [ ] Verify a fresh local setup, database persistence after restart, photo handling, and the admin-to-member-to-admin flow in two browser sessions.
+- [x] Add a repeatable seed command with one household, a primary admin, secondary admin, several members, one-time and recurring chores, varied categories/priorities, overdue work, pending approval, and completed work.
+- [x] Write README instructions for environment setup, dependency installation, migrations, seed data, local demo credentials, ASGI server startup, reminder scheduling, tests, and Swagger access.
+- [x] Run the complete backend and browser test suites. Close gaps in assignment, recurrence, completion/review, undo, audit history, PINs, lockout, sessions, and reminders.
+- [x] Verify a fresh local setup, database persistence after restart, photo handling, and the admin-to-member-to-admin flow in two browser sessions.
 
 **Done when:** a new developer can follow the README to run and demonstrate the complete app locally, with all required tests passing.
+
+**Final verification (2026-09-07):** Checked out the staged source into an isolated directory with no existing environment, database, or uploads. `uv sync --locked` installed dependencies into a new Python 3.13.2 environment. Fresh migrations and demo seeding succeeded; rerunning the seed created zero additional chores. Started and stopped the ASGI server twice and verified unchanged member, chore, and audit API data plus saved photo bytes across restart and reseeding. Login and Swagger pages served successfully. The reminder command delivered two reminders, then zero on its repeat run. All 82 tests passed with `RUN_BROWSER_TESTS=1`, including desktop/mobile flows in separate admin/member browser sessions, required photo upload, rejection/resubmission, approval, filtering, workload, and live assignment. Django checks, migration drift checks, and OpenAPI validation passed. Reminder scheduling remains a documented per-installation setup step, consistent with the local-development scope.
 
 ## Scope guardrails
 

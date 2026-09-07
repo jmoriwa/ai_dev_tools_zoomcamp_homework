@@ -123,7 +123,6 @@ class APITests(TestCase):
             response = self.client.get(f"/api/photos/{attempt.pk}/")
             self.assertEqual(response.status_code, 200)
             self.assertEqual(b"".join(response.streaming_content), image.getvalue())
-            response.close()
             self.actor(self.other)
             self.assertEqual(self.client.get(f"/api/photos/{attempt.pk}/").status_code, 404)
 

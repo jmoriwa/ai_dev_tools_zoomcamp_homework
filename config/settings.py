@@ -83,7 +83,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": os.environ.get("HOUSEHOLD_DB", BASE_DIR / "db.sqlite3"),
     }
 }
 if os.environ.get("RUN_BROWSER_TESTS") == "1":
@@ -134,7 +134,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Local household application foundation.
 AUTH_USER_MODEL = "chores.User"
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = Path(os.environ.get("HOUSEHOLD_MEDIA", BASE_DIR / "media"))
 STATIC_ROOT = BASE_DIR / "staticfiles"
 SESSION_COOKIE_AGE = 24 * 60 * 60
 SESSION_SAVE_EVERY_REQUEST = True
