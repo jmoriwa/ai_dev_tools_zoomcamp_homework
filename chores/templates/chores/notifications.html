@@ -1,0 +1,2 @@
+{% extends 'chores/base.html' %}
+{% block content %}<h1>Notifications</h1>{% for item in notifications %}<article><p>{% if not item.read_at %}<strong>Unread</strong> · {% endif %}{{ item.created_at }}</p><a href="{% url 'chores:notification_open' item.pk %}">{{ item.message }}</a></article>{% empty %}<p>No notifications yet.</p>{% endfor %}{% endblock %}

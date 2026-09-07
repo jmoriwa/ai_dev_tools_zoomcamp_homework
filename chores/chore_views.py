@@ -8,6 +8,7 @@ from . import services
 from .accounts import require_admin
 from .forms import ChoreForm, DuplicateForm, BulkChoreForm
 from . import recurrence
+from . import reminders
 from . import completion
 from .models import AuditEvent, CompletionAttempt
 
@@ -76,6 +77,10 @@ def completion_action(request, pk, action):
             completion.reactivate(actor=request.user, chore=chore, note=request.POST.get("note", ""))
         elif action == "catchup":
             recurrence.resolve_catchup(actor=request.user, chore=chore, choice=request.POST.get("choice"))
+        elif action == "pause":
+            reminders.pause(actor=request.user, chore=chore, reason=request.POST.get("reason", ""))
+        elif action == "resume":
+            reminders.resume(actor=request.user, chore=chore)
     except ValidationError as error:
         return render(request, "chores/chore_detail.html", {"chore": chore, "status_label": completion.status_label(chore), "latest": completion.latest_attempt(chore), "errors": error.messages}, status=400)
     return redirect("chores:chore_detail", pk=pk)

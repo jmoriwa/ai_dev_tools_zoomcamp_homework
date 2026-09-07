@@ -84,13 +84,15 @@ Starting point: Django is installed, the `config` project exists, and the `chore
 
 ## 7. Deliver notifications and scheduled reminders
 
-- [ ] Build an unread badge and notification center; opening a notification marks it read. Retain all notifications and link review notifications to the chore detail page.
-- [ ] Connect notifications for major edits and member completions, and add due-date reminders.
-- [ ] For rejected-overdue chores, remind the member immediately and daily until resubmission; remind admins after one day and daily thereafter until resubmission.
-- [ ] Add admin pause/resume actions per chore. Require a pause reason when overdue, show members who paused reminders, audit both actions, and keep reminders paused until manually resumed.
-- [ ] Provide a repeat-safe Django management command for reminders and document how to schedule it locally. Store delivery information so repeated runs do not duplicate reminders.
+- [x] Build an unread badge and notification center; opening a notification marks it read. Retain all notifications and link review notifications to the chore detail page.
+- [x] Connect notifications for major edits and member completions, and add due-date reminders.
+- [x] For rejected-overdue chores, remind the member immediately and daily until resubmission; remind admins after one day and daily thereafter until resubmission.
+- [x] Add admin pause/resume actions per chore. Require a pause reason when overdue, show members who paused reminders, audit both actions, and keep reminders paused until manually resumed.
+- [x] Provide a repeat-safe Django management command for reminders and document how to schedule it locally. Store delivery information so repeated runs do not duplicate reminders.
 
 **Done when:** clock-controlled tests verify due dates, reminder timing, duplicate prevention, pause/resume, and stopping after resubmission; opening a notification updates its read state.
+
+**Verification:** 50 backend tests pass, including clock-controlled due/rejected reminders, admin delay, duplicate suppression, pause/resume, resubmission stopping reminders, and notification ownership/read behavior.
 
 ## 8. Add live updates with Django Channels
 

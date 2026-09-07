@@ -11,6 +11,11 @@
 {% if chore.series %}<p>Repeats {{ chore.series.get_frequency_display|lower }}</p>{% endif %}
 {% if chore.requires_photo %}<p>Completion photo required</p>{% endif %}
 {% if chore.requires_approval %}<p>Admin approval required</p>{% endif %}
+{% if chore.reminders_paused_at %}<p>Reminders paused by {{ chore.reminders_paused_by }}.</p>{% endif %}
+{% if user.is_household_admin %}
+{% if chore.reminders_paused_at %}<form method="post" action="{% url 'chores:chore_resume' chore.pk %}">{% csrf_token %}<button>Resume reminders</button></form>
+{% else %}<form method="post" action="{% url 'chores:chore_pause' chore.pk %}">{% csrf_token %}<label for="pause-reason">Pause reason (required if overdue)</label><input id="pause-reason" name="reason"><button>Pause reminders</button></form>{% endif %}
+{% endif %}
 {% if latest %}<section><h2>Latest submission</h2><p>{{ latest.note }}</p>
 {% if latest.photo %}<a href="{% url 'chores:attempt_photo' latest.pk %}">View completion photo</a>{% endif %}
 {% if latest.rejection_reason %}<p>Rejection reason: {{ latest.rejection_reason }}</p><p>Please submit a fresh note/photo.</p>{% endif %}

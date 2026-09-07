@@ -90,6 +90,9 @@ def review(*, actor, chore, approve, reason=""):
     if approve:
         from .recurrence import advance
         advance(chore, actor)
+    else:
+        from .reminders import send_reminders
+        send_reminders(chore_id=chore.pk)
     return attempt
 
 

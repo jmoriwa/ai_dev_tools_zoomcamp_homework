@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 from . import accounts
 from .forms import ChangePINForm, LoginForm, MemberForm
 from .models import User
+from django.utils import timezone
 
 
 def home(request):
@@ -96,3 +97,17 @@ def member_action(request, pk, action):
     elif action == "unlock":
         accounts.unlock_member(actor=request.user, subject=subject)
     return redirect("chores:members")
+
+
+@login_required
+def notifications(request):
+    return render(request, "chores/notifications.html", {"notifications": request.user.notifications.select_related("chore")})
+
+
+@login_required
+def notification_open(request, pk):
+    notification = get_object_or_404(request.user.notifications.select_related("chore"), pk=pk)
+    if notification.read_at is None:
+        notification.read_at = timezone.now()
+        notification.save(update_fields=["read_at"])
+    return render(request, "chores/notification.html", {"notification": notification})

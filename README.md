@@ -65,6 +65,17 @@ See the [uv project guide](https://docs.astral.sh/uv/guides/projects/) for detai
 
 ## Checks
 
+Run repeat-safe reminders manually with `uv run --locked python manage.py send_reminders`.
+For ongoing local use, configure Windows Task Scheduler to run the project's
+`.venv/Scripts/python.exe` with arguments `manage.py send_reminders`, set **Start in**
+to this project directory, and repeat hourly. Due reminders are once per date;
+rejected-overdue member reminders start immediately, and admin reminders begin
+after 24 hours. Pausing persists until an admin resumes reminders on the chore.
+
+For desktop/mobile UI checks, run `uv run playwright install chromium`, set
+`$env:RUN_BROWSER_TESTS = '1'`, then run the tests below. Without that environment
+variable the Chromium tests are skipped. Screenshots go to `.artifacts/`.
+
 ```powershell
 uv run --locked python manage.py check
 uv run --locked python manage.py makemigrations --check --dry-run

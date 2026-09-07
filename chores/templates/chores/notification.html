@@ -1,0 +1,4 @@
+{% extends 'chores/base.html' %}
+{% block content %}<h1>Notification</h1><p>{{ notification.message }}</p>
+{% if notification.chore and not notification.chore.deleted_at %}<p><a href="{% url 'chores:chore_detail' notification.chore_id %}">Open chore</a></p>{% else %}<p>This chore is no longer available.</p>{% endif %}
+<p><a href="{% url 'chores:notifications' %}">All notifications</a></p>{% endblock %}
