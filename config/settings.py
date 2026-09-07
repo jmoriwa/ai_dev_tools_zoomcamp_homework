@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,12 +26,13 @@ SECRET_KEY = "django-insecure-l0ysi!33ws$ke!i2v1w^-ztm)y_xd=qbyd-oo4f16-a2936u7%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'chores.apps.ChoresConfig',
     "django.contrib.admin",
     "django.contrib.auth",
@@ -42,7 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
+    "chores.middleware.ActivitySessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -81,6 +83,8 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+if os.environ.get("RUN_BROWSER_TESTS") == "1":
+    DATABASES["default"]["TEST"] = {"NAME": BASE_DIR / "test-browser.sqlite3"}
 
 
 # Password validation
@@ -134,3 +138,5 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 AUTHENTICATION_BACKENDS = ["chores.accounts.PINBackend", "django.contrib.auth.backends.ModelBackend"]
 LOGIN_URL = "chores:login"
+ASGI_APPLICATION = "config.asgi.application"
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}

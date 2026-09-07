@@ -1,9 +1,11 @@
 """Run with RUN_BROWSER_TESTS=1 after playwright install chromium."""
 import os
+import asyncio
+import sys
 from pathlib import Path
 from unittest import skipUnless
 
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from channels.testing import ChannelsLiveServerTestCase
 from django.test import override_settings
 from django.utils import timezone
 from playwright.sync_api import sync_playwright, expect
@@ -12,14 +14,18 @@ from .models import Household, User
 
 
 @skipUnless(os.environ.get("RUN_BROWSER_TESTS") == "1", "Enable RUN_BROWSER_TESTS for Chromium UI tests")
-@override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
-class BrowserTests(StaticLiveServerTestCase):
+class BrowserTests(ChannelsLiveServerTestCase):
     def setUp(self):
         Household.objects.get_or_create(pk=1)
         User.objects.create_user(username="Admin", password="123456", role="primary_admin")
         User.objects.create_user(username="Alex", password="234567")
 
     def flow(self, width):
+        # Daphne selects a Windows selector loop; Playwright needs subprocess support.
+        if sys.platform == "win32":
+            policy = asyncio.get_event_loop_policy()
+            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+            self.addCleanup(asyncio.set_event_loop_policy, policy)
         with sync_playwright() as runtime:
             browser = runtime.chromium.launch(headless=True)
             browser.on("disconnected", lambda: None)
@@ -43,7 +49,7 @@ class BrowserTests(StaticLiveServerTestCase):
             admin.get_by_role("button", name="Save chore", exact=True).click()
             expect(admin.get_by_role("heading", name="Browser dishes", exact=True)).to_be_visible()
             chore_url = admin.url
-            member.reload()
+            expect(member.get_by_role("link", name="Browser dishes", exact=True)).to_be_visible()
             member.get_by_label("Category").select_option("bathroom")
             member.get_by_role("button", name="Apply filters").click()
             expect(member.get_by_role("link", name="Browser dishes", exact=True)).to_have_count(0)

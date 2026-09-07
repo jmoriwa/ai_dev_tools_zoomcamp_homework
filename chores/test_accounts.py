@@ -193,6 +193,14 @@ class AccountTests(TestCase):
         client.force_login(self.admin, backend="django.contrib.auth.backends.ModelBackend")
         self.assertEqual(client.post(reverse("chores:member_reset", args=[self.member.pk])).status_code, 403)
 
+    def test_passive_live_refresh_does_not_extend_session(self):
+        self.login()
+        key = self.client.session.session_key
+        expiry = Session.objects.get(session_key=key).expire_date
+        with patch("django.utils.timezone.now", return_value=timezone.now() + timedelta(hours=12)):
+            self.client.get(reverse("chores:dashboard"), HTTP_X_LIVE_REFRESH="1")
+        self.assertEqual(Session.objects.get(session_key=key).expire_date, expiry)
+
     def test_bootstrap_primary_admin(self):
         User.objects.filter(pk=self.admin.pk).update(role="admin")
         output = StringIO()

@@ -65,6 +65,13 @@ See the [uv project guide](https://docs.astral.sh/uv/guides/projects/) for detai
 
 ## Checks
 
+The development server now runs ASGI through Daphne (`uv run python manage.py
+runserver`). Keep one server process: the in-memory Channels layer cannot send
+events between processes. Browser sessions subscribe only to their own updates;
+admins additionally receive household refresh events. PIN changes, lockouts, and
+expired sessions also close active sockets. Passive refreshes do not extend the
+24-hour inactivity timer. Form edits are preserved when updates arrive.
+
 Run repeat-safe reminders manually with `uv run --locked python manage.py send_reminders`.
 For ongoing local use, configure Windows Task Scheduler to run the project's
 `.venv/Scripts/python.exe` with arguments `manage.py send_reminders`, set **Start in**

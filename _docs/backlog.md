@@ -96,12 +96,14 @@ Starting point: Django is installed, the `config` project exists, and the `chore
 
 ## 8. Add live updates with Django Channels
 
-- [ ] Install/configure Channels, ASGI serving, WebSocket routes, and an in-memory channel layer for a single local server process.
-- [ ] Use authenticated sessions and authorized subscriptions so members receive only their own updates while admins receive household updates.
-- [ ] Publish updates after successful database changes for assignments, completions, status changes, approvals/rejections, and notifications.
-- [ ] Refresh affected dashboard sections and badges without a full-page reload; reconnect cleanly and refresh state after disconnection.
+- [x] Install/configure Channels, ASGI serving, WebSocket routes, and an in-memory channel layer for a single local server process.
+- [x] Use authenticated sessions and authorized subscriptions so members receive only their own updates while admins receive household updates.
+- [x] Publish updates after successful database changes for assignments, completions, status changes, approvals/rejections, and notifications.
+- [x] Refresh affected dashboard sections and badges without a full-page reload; reconnect cleanly and refresh state after disconnection.
 
 **Done when:** changes in an admin browser appear in the assigned member's browser, and tests verify that another member cannot subscribe to or receive those events.
+
+**Verification:** 55 backend/WebSocket tests and 2 ASGI Chromium flows pass. Assignments appear without reload; foreign origins and unauthorized subscriptions are rejected. Session invalidation and post-commit publication are tested.
 
 ## 9. Expose and document the REST API
 

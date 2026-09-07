@@ -1,4 +1,13 @@
 from django.contrib.auth import logout
+from django.contrib.sessions.middleware import SessionMiddleware
+
+
+class ActivitySessionMiddleware(SessionMiddleware):
+    def process_response(self, request, response):
+        # Passive live refreshes must not keep an unattended browser logged in.
+        if request.headers.get("X-Live-Refresh") == "1":
+            return response
+        return super().process_response(request, response)
 
 
 class PINSessionMiddleware:

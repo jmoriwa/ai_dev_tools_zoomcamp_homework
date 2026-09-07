@@ -5,6 +5,8 @@ description = "Local Django app for shared household chores"
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [
+    "channels>=4.3.2",
+    "daphne>=4.2.3",
     "Django==5.2.17",
     "pillow>=12.3.0",
 ]

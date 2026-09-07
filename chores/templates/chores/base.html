@@ -7,6 +7,7 @@
   <title>{% block title %}Household chores{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'chores/app.css' %}">
   <script src="{% static 'chores/vendor/htmx.min.js' %}" defer></script>
+  {% if user.is_authenticated %}<script src="{% static 'chores/live.js' %}" defer></script>{% endif %}
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -30,6 +31,7 @@
     {% for message in messages %}<p role="status" class="message">{{ message }}</p>{% endfor %}
     {% block content %}{% endblock %}
   </main>
+  <p id="live-status" role="status"></p>
   <footer>A little teamwork. A happier home.</footer>
 </body>
 </html>

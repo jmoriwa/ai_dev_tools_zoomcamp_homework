@@ -25,3 +25,4 @@ media/
 # Collected static assets
 staticfiles/
 .artifacts/
+test-browser.sqlite3*
