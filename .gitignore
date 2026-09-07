@@ -16,3 +16,11 @@ venv/
 
 # Node dependencies
 node_modules/
+
+# Local Django data and uploads
+db.sqlite3
+db.sqlite3-journal
+media/
+
+# Collected static assets
+staticfiles/

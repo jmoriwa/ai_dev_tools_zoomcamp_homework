@@ -1,0 +1,29 @@
+{% extends 'chores/base.html' %}
+{% block title %}Members · Household chores{% endblock %}
+{% block content %}
+<h1>Household members</h1>
+<section aria-labelledby="create-member"><h2 id="create-member">Create a member</h2>
+<p>Usernames are case-sensitive. PINs must contain six digits and cannot start with zero.</p>
+<form method="post" class="account-form">{% csrf_token %}{{ form.as_p }}<button type="submit">Create member</button></form>
+</section>
+<h2>Manage accounts</h2>
+<div class="cards">
+{% for member in members %}
+<article>
+  <h2>{{ member.username }}</h2><p>{{ member.get_role_display }}</p>
+  {% if member.locked_at %}<p>Account locked</p>
+    {% if member.pk != user.pk %}<form method="post" action="{% url 'chores:member_unlock' member.pk %}">{% csrf_token %}<button>Unlock account</button></form>{% endif %}
+  {% endif %}
+  {% if member.role == 'member' %}
+    <form method="post" action="{% url 'chores:member_reset' member.pk %}">{% csrf_token %}<button>Reset PIN</button></form>
+  {% endif %}
+  {% if user.role == 'primary_admin' and member.role != 'primary_admin' %}
+    <form method="post" action="{% url 'chores:member_role' member.pk %}">{% csrf_token %}
+    {% if member.role == 'member' %}<input type="hidden" name="role" value="admin"><button>Promote to admin</button>
+    {% else %}<input type="hidden" name="role" value="member"><button>Demote to member</button>{% endif %}
+    </form>
+  {% endif %}
+</article>
+{% endfor %}
+</div>
+{% endblock %}

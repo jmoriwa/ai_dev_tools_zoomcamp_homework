@@ -1,0 +1,30 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Household chores{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'chores/app.css' %}">
+  <script src="{% static 'chores/vendor/htmx.min.js' %}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header><nav aria-label="Main navigation">
+    <a class="brand" href="{% url 'chores:home' %}">Household chores</a>
+    <a href="{% url 'chores:home' %}" aria-current="page">Home</a>
+    {% if user.is_authenticated %}
+      {% if user.is_household_admin %}<a href="{% url 'chores:members' %}">Members</a>{% endif %}
+      <a href="{% url 'chores:change_pin' %}">Change PIN</a>
+      <span>{{ user.username }}</span>
+      <form method="post" action="{% url 'chores:logout' %}">{% csrf_token %}<button type="submit">Log out</button></form>
+    {% else %}<a href="{% url 'chores:login' %}">Log in</a>{% endif %}
+    {% if user.is_staff %}<a href="{% url 'admin:index' %}">Internal management</a>{% endif %}
+  </nav></header>
+  <main id="main">
+    {% for message in messages %}<p role="status" class="message">{{ message }}</p>{% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer>A little teamwork. A happier home.</footer>
+</body>
+</html>

@@ -1,0 +1,28 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #f7f8f3; color: #20382e; font: 1rem/1.6 system-ui, sans-serif; }
+a { color: #245f48; text-underline-offset: .2em; }
+a:focus-visible { outline: 3px solid #a55220; outline-offset: 4px; }
+header { background: #fff; border-bottom: 1px solid #dce3da; }
+nav { max-width: 1100px; margin: auto; padding: 1.25rem; display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; }
+.brand { font-size: 1.2rem; font-weight: 750; margin-right: auto; text-decoration: none; }
+main { max-width: 1100px; margin: auto; padding: 3rem 1.25rem; }
+.intro { max-width: 720px; margin-bottom: 2.5rem; }
+h1 { font-size: clamp(2rem, 5vw, 3.6rem); line-height: 1.15; margin: .6rem 0 1.4rem; }
+h2 { font-size: 1.25rem; }
+.eyebrow { font-size: .8rem; font-weight: 700; letter-spacing: .15em; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+article { background: white; border: 1px solid #dce3da; padding: 1.5rem; border-radius: 1rem; }
+.number { font-weight: bold; color: #52765c; }
+.message { background: #e7eee2; padding: 1rem; border-radius: .5rem; margin-top: 2rem; }
+footer { max-width: 1100px; margin: auto; padding: 1.25rem; color: #526258; }
+.skip-link { position: absolute; left: 1rem; top: -100px; background: white; padding: .5rem; }
+.skip-link:focus { top: 0; }
+.account-form { max-width: 28rem; margin-bottom: 2rem; }
+label { display: block; font-weight: 600; }
+input { max-width: 100%; width: 100%; padding: .65rem; font: inherit; border: 1px solid #74877b; border-radius: .35rem; }
+button { background: #245f48; color: white; border: 0; border-radius: .35rem; padding: .65rem 1rem; font: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 3px solid #a55220; outline-offset: 3px; }
+article form { margin-top: .75rem; }
+article h2, [role="status"] { overflow-wrap: anywhere; }
+.errorlist { color: #9a291f; }
+@media (max-width: 640px) { .cards { grid-template-columns: 1fr; } main { padding-top: 2rem; } nav { gap: 1rem; } }
