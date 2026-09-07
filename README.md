@@ -5,6 +5,35 @@ Includes PIN accounts, role permissions, recurring schedules, approval workflows
 photos, audit history, notifications, reminders, responsive dashboards, HTMX,
 Channels live updates, and a documented Django REST Framework demo API.
 
+## Screenshots
+
+The local demo includes a household dashboard, member workload overview, recurring
+schedule, and audit history. These screenshots show the admin view with demo data.
+
+### Household dashboard
+
+Filter chores by category and priority, check due-work counts, and create or assign chores.
+
+![Admin dashboard with category and priority filters, status counts, and today's chores](screenshots/Screenshot%202026-09-07%20163959.png)
+
+### Member workload
+
+Compare each member's active chores by low, medium, and high priority.
+
+![Member workload table showing chore counts grouped by priority](screenshots/Screenshot%202026-09-07%20164012.png)
+
+### Recurring schedule
+
+Preview the next month's recurring chores on their original schedule.
+
+![Recurring schedule preview listing upcoming dates and assigned members](screenshots/Screenshot%202026-09-07%20164102.png)
+
+### History
+
+Review chore events, completion notes, and rejection feedback in the household audit history.
+
+![Household history showing a rejected submission, its note, and the original chore creation](screenshots/Screenshot%202026-09-07%20164029.png)
+
 ## Run the demo (PowerShell)
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/) if needed
