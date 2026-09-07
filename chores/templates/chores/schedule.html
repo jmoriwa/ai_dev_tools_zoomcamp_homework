@@ -1,0 +1,3 @@
+{% extends 'chores/base.html' %}
+{% block content %}<h1>Next month’s recurring schedule</h1><p>Projected dates follow the original schedule. Actual chores appear in your chore list. Series awaiting an admin catch-up choice are omitted.</p>
+{% for item in schedule %}<article>{{ item.date }} · {{ item.title }} · {{ item.assignee }}</article>{% empty %}<p>No projected recurring chores.</p>{% endfor %}{% endblock %}

@@ -3,6 +3,7 @@
 <h1>Chores</h1>
 {% if user.is_household_admin %}
 <p><a href="{% url 'chores:chore_create' %}">Create chore</a></p>
+<p><a href="{% url 'chores:bulk_create' %}">Bulk assign recurring chore</a></p>
 <form method="get"><label for="search">Search by title</label><input id="search" name="q" value="{{ request.GET.q }}"><button>Search</button></form>
 {% endif %}
 <div class="cards">

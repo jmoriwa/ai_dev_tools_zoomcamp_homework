@@ -4,6 +4,8 @@ from . import chore_views
 
 app_name = "chores"
 urlpatterns = [
+    path("schedule/", chore_views.schedule, name="schedule"),
+    path("chores/bulk/", chore_views.bulk_create, name="bulk_create"),
     path("history/", chore_views.history, name="history"),
     path("photos/<int:pk>/", chore_views.attempt_photo, name="attempt_photo"),
     path("chores/", chore_views.chore_list, name="chore_list"),
@@ -21,5 +23,5 @@ urlpatterns = [
     path("members/<int:pk>/reset/", views.member_action, {"action": "reset"}, name="member_reset"),
     path("members/<int:pk>/unlock/", views.member_action, {"action": "unlock"}, name="member_unlock"),
 ]
-for action in ("submit", "approve", "reject", "undo", "reactivate"):
+for action in ("submit", "approve", "reject", "undo", "reactivate", "catchup"):
     urlpatterns.append(path(f"chores/<int:pk>/{action}/", chore_views.completion_action, {"action": action}, name=f"chore_{action}"))

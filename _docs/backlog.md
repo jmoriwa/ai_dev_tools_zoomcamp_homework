@@ -56,15 +56,19 @@ Starting point: Django is installed, the `config` project exists, and the `chore
 
 ## 5. Add daily and weekly recurrence
 
-- [ ] Generate the next occurrence when a recurring chore completes, using the original schedule rather than the completion date.
-- [ ] When scheduled occurrences were missed, present the admin with a choice to create all missed occurrences or skip them and continue with the next scheduled date.
-- [ ] Allow bulk assignment only for recurring chores, creating an independent series for each selected member.
-- [ ] Show members a one-month schedule preview. Preserve an already-created next occurrence when completion is undone.
-- [ ] Prevent duplicate occurrences when a completion request is retried or a chore is undone and completed again.
+- [x] Generate the next occurrence when a recurring chore completes, using the original schedule rather than the completion date.
+- [x] When scheduled occurrences were missed, present the admin with a choice to create all missed occurrences or skip them and continue with the next scheduled date.
+- [x] Allow bulk assignment only for recurring chores, creating an independent series for each selected member.
+- [x] Show members a one-month schedule preview. Preserve an already-created next occurrence when completion is undone.
+- [x] Prevent duplicate occurrences when a completion request is retried or a chore is undone and completed again.
 
 **Done when:** tests cover daily/weekly schedules, late completion, both catch-up choices, bulk assignment, preview dates, and undo/recompletion.
 
 **Decision before implementation:** define how member completion waits for the admin's missed-occurrence choice. Use final approval as the completion point for approval-required recurrence unless the plan is clarified otherwise.
+
+**Implemented decision:** Completion finishes immediately (or at final approval), with an explicit pending admin catch-up choice. The next occurrence waits for that choice. Undo preserves generated occurrences; repeat processing cannot duplicate them.
+
+**Verification:** 45 tests pass, including daily/weekly schedules, original-date anchoring, both catch-up choices, approval timing, bulk page flow, preview ownership, and undo/recompletion.
 
 ## 6. Finish the member and admin dashboards
 

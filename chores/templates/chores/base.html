@@ -16,6 +16,7 @@
     {% if user.is_authenticated %}
       <a href="{% url 'chores:chore_list' %}">Chores</a>
       <a href="{% url 'chores:history' %}">History</a>
+      <a href="{% url 'chores:schedule' %}">Schedule</a>
       {% if user.is_household_admin %}<a href="{% url 'chores:members' %}">Members</a>{% endif %}
       <a href="{% url 'chores:change_pin' %}">Change PIN</a>
       <span>{{ user.username }}</span>

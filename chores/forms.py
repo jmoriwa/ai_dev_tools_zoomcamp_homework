@@ -46,3 +46,15 @@ class DuplicateForm(forms.Form):
     def __init__(self, *args, actor, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["assignee"].queryset = User.objects.filter(household=actor.household, is_active=True)
+
+
+class BulkChoreForm(ChoreForm):
+    assignees = forms.ModelMultipleChoiceField(queryset=User.objects.none())
+
+    def __init__(self, *args, actor, **kwargs):
+        super().__init__(*args, actor=actor, **kwargs)
+        self.fields.pop("assignee")
+        self.fields.pop("note")
+        self.fields["frequency"].choices = RecurringSeries.Frequency.choices
+        self.fields["frequency"].required = True
+        self.fields["assignees"].queryset = User.objects.filter(household=actor.household, is_active=True)

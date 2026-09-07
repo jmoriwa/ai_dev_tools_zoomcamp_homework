@@ -63,6 +63,8 @@ def submit(*, actor, chore, note="", photo=None):
     action = "resubmitted" if previous and previous.status == "rejected" else "admin_completion" if actor.pk != chore.assignee_id else "completion_submitted" if chore.requires_approval else "completed"
     record(actor, chore, action, note, attempt)
     notify_admins(chore, f"{actor.username} submitted {chore.title} for {chore.assignee.username}.")
+    from .recurrence import advance
+    advance(chore, actor)
     return attempt
 
 
@@ -85,6 +87,9 @@ def review(*, actor, chore, approve, reason=""):
     chore.save(update_fields=["status", "completed_at", "updated_at"])
     record(actor, chore, "approved" if approve else "rejected", reason if not approve else "", attempt)
     Notification.objects.create(recipient=chore.assignee, chore=chore, kind="review", message=f"{chore.title}: {'approved' if approve else 'please open the chore and resubmit'}.")
+    if approve:
+        from .recurrence import advance
+        advance(chore, actor)
     return attempt
 
 

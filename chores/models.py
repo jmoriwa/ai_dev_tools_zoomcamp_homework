@@ -89,6 +89,8 @@ class Chore(ChoreDetails):
     due_date = models.DateField(db_index=True)
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.OPEN)
     completed_at = models.DateTimeField(null=True, blank=True)
+    recurrence_processed = models.BooleanField(default=False)
+    catchup_pending = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
     reminders_paused_at = models.DateTimeField(null=True, blank=True)
     reminders_paused_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.PROTECT, related_name="paused_chores")

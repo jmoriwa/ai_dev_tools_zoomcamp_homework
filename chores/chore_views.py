@@ -6,7 +6,8 @@ from django.http import FileResponse
 
 from . import services
 from .accounts import require_admin
-from .forms import ChoreForm, DuplicateForm
+from .forms import ChoreForm, DuplicateForm, BulkChoreForm
+from . import recurrence
 from . import completion
 from .models import AuditEvent, CompletionAttempt
 
@@ -73,6 +74,8 @@ def completion_action(request, pk, action):
             completion.undo(actor=request.user, chore=chore)
         elif action == "reactivate":
             completion.reactivate(actor=request.user, chore=chore, note=request.POST.get("note", ""))
+        elif action == "catchup":
+            recurrence.resolve_catchup(actor=request.user, chore=chore, choice=request.POST.get("choice"))
     except ValidationError as error:
         return render(request, "chores/chore_detail.html", {"chore": chore, "status_label": completion.status_label(chore), "latest": completion.latest_attempt(chore), "errors": error.messages}, status=400)
     return redirect("chores:chore_detail", pk=pk)
@@ -95,3 +98,18 @@ def attempt_photo(request, pk):
     response = FileResponse(attempt.photo.open("rb"))
     response["Cache-Control"] = "private, no-store"
     return response
+
+
+@login_required
+def bulk_create(request):
+    require_admin(request.user)
+    form = BulkChoreForm(request.POST or None, actor=request.user)
+    if request.method == "POST" and form.is_valid():
+        recurrence.bulk_create(actor=request.user, **form.cleaned_data)
+        return redirect("chores:chore_list")
+    return render(request, "chores/account_form.html", {"form": form, "title": "Assign recurring chore to several members", "button": "Create independent series"})
+
+
+@login_required
+def schedule(request):
+    return render(request, "chores/schedule.html", {"schedule": recurrence.schedule_preview(actor=request.user)})

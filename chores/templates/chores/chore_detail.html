@@ -3,6 +3,8 @@
 <h1>{{ chore.title }}</h1>
 {% for error in errors %}<p role="alert" class="errorlist">{{ error }}</p>{% endfor %}
 <p><strong>{{ status_label }}</strong></p>
+{% if chore.catchup_pending and chore.status == 'completed' %}<p>Completed. An admin must choose how to handle missed scheduled occurrences.</p>
+{% if user.is_household_admin %}<form method="post" action="{% url 'chores:chore_catchup' chore.pk %}">{% csrf_token %}<button name="choice" value="all">Create all missed occurrences</button> <button name="choice" value="skip">Skip missed occurrences</button></form>{% endif %}{% endif %}
 <p>{{ chore.description|linebreaksbr }}</p>
 <p>Assigned to {{ chore.assignee }} · Due {{ chore.due_date }}</p>
 <p>{{ chore.get_category_display }} · {{ chore.get_priority_display }} priority · {{ chore.get_status_display }}</p>
