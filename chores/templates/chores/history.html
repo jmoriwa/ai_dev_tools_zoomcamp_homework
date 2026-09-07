@@ -1,0 +1,8 @@
+{% extends 'chores/base.html' %}
+{% block content %}<h1>History</h1>
+{% for event in events %}<article><h2>{{ event.action }}{% if event.chore %} · {{ event.chore.title }}{% endif %}</h2>
+<p>{{ event.created_at }} · {{ event.actor|default:'System' }} · {{ event.subject|default:'' }}</p>
+{% if event.chore.deleted_at %}<p>Chore deleted permanently</p>{% endif %}
+<p>{{ event.note|linebreaksbr }}</p>
+{% if event.attempt %}<p>Submission: {{ event.attempt.note }}</p>{% if event.attempt.photo %}<a href="{% url 'chores:attempt_photo' event.attempt.pk %}">View submission photo</a>{% endif %}{% endif %}
+</article>{% empty %}<p>No history yet.</p>{% endfor %}{% endblock %}

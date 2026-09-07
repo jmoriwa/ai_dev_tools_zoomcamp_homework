@@ -43,14 +43,16 @@ Starting point: Django is installed, the `config` project exists, and the `chore
 
 ## 4. Implement completion, approval, and history
 
-- [ ] Allow members to mark chores done with an optional note/photo; enforce photos when required. Allow admins to complete chores for members and record the acting admin.
-- [ ] Complete ordinary chores immediately; send approval-required chores to pending review. Admins approve or reject from the chore detail page.
-- [ ] Require a rejection reason on the chore, but omit it from notifications. Keep rejected chores pending until resubmission and retain every attempt's note/photo. Resubmission requires a new submission rather than automatically reusing attachments or notes.
-- [ ] Show `Submitted on time` while a timely submission awaits review and `Rejected — overdue` for rejection after the due date.
-- [ ] Allow member undo within 15 minutes of completion. After that window, allow admin reactivation only with an audit note.
-- [ ] Build personal completion history and full household history for admins. Record all completion, review, resubmission, undo, and reactivation events.
+- [x] Allow members to mark chores done with an optional note/photo; enforce photos when required. Allow admins to complete chores for members and record the acting admin.
+- [x] Complete ordinary chores immediately; send approval-required chores to pending review. Admins approve or reject from the chore detail page.
+- [x] Require a rejection reason on the chore, but omit it from notifications. Keep rejected chores pending until resubmission and retain every attempt's note/photo. Resubmission requires a new submission rather than automatically reusing attachments or notes.
+- [x] Show `Submitted on time` while a timely submission awaits review and `Rejected — overdue` for rejection after the due date.
+- [x] Allow member undo within 15 minutes of completion. After that window, allow admin reactivation only with an audit note.
+- [x] Build personal completion history and full household history for admins. Record all completion, review, resubmission, undo, and reactivation events.
 
 **Done when:** tests verify each transition, photo requirements, ownership, preserved attempts, submission timing, and the undo boundary; the complete approval flow works through the pages.
+
+**Verification:** 40 tests pass, including completion/review page flow, photo validation and access control, rejection retention, on-time status, undo boundary, and audit history.
 
 ## 5. Add daily and weekly recurrence
 
