@@ -13,7 +13,16 @@ from .models import User
 
 
 def home(request):
+    if request.user.is_authenticated and not request.user.is_staff:
+        return redirect("chores:dashboard")
     return render(request, "chores/home.html")
+
+
+@login_required
+def dashboard(request):
+    from .dashboard import dashboard_data
+    template = "chores/dashboard_content.html" if request.headers.get("HX-Request") else "chores/dashboard.html"
+    return render(request, template, dashboard_data(request.user, request.GET))
 
 
 @sensitive_post_parameters("pin")

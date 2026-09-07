@@ -28,4 +28,10 @@ article h2, [role="status"] { overflow-wrap: anywhere; }
 select, textarea { width: 100%; max-width: 100%; padding: .65rem; font: inherit; }
 input[type="checkbox"] { width: auto; }
 .cards { margin-top: 1.5rem; }
+.filters { display: flex; flex-wrap: wrap; align-items: end; gap: 1rem; }
+.filters label { flex: 1; min-width: 10rem; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { text-align: left; padding: .75rem; border-bottom: 1px solid #dce3da; }
+section { margin: 2rem 0; }
 @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } main { padding-top: 2rem; } nav { gap: 1rem; } }

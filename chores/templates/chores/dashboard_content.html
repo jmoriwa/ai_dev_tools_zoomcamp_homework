@@ -1,0 +1,14 @@
+<div id="dashboard-content">
+<h1>{% if user.is_household_admin %}Household dashboard{% else %}My chores{% endif %}</h1>
+{% if user.is_household_admin %}<p><a href="{% url 'chores:chore_create' %}">Create and assign chore</a> · <a href="{% url 'chores:bulk_create' %}">Bulk assign recurring chore</a></p><p>Locked members: {{ locked_count }} · <a href="{% url 'chores:members' %}">Manage members</a></p>{% endif %}
+<form method="get" action="{% url 'chores:dashboard' %}" hx-get="{% url 'chores:dashboard' %}" hx-target="#dashboard-content" hx-swap="outerHTML" class="filters">
+<label>Category<select name="category"><option value="">All categories</option>{% for value,label in categories %}<option value="{{ value }}" {% if request.GET.category == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+<label>Priority<select name="priority"><option value="">All priorities</option>{% for value,label in priorities %}<option value="{{ value }}" {% if request.GET.priority == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+{% if user.is_household_admin %}<label>Sort members<select name="sort"><option value="">Username</option><option value="workload" {% if request.GET.sort == 'workload' %}selected{% endif %}>Workload</option></select></label>{% endif %}<button>Apply filters</button></form>
+<div class="cards" aria-label="Chore counts">{% for label,count in counts.items %}<article>{{ label }}: <strong>{{ count }}</strong></article>{% endfor %}</div>
+{% for label,chores in sections.items %}<section aria-label="{{ label }}"><h2>{{ label }}</h2><div class="cards">
+{% for chore in chores %}<article><h2><a href="{% url 'chores:chore_detail' chore.pk %}">{{ chore.title }}</a></h2><p>{{ chore.assignee }} · {{ chore.due_date }}</p><p>{{ chore.get_priority_display }} · {{ chore.get_category_display }} · {{ chore.display_status }}</p></article>{% empty %}<p>No chores here.</p>{% endfor %}</div></section>{% endfor %}
+{% if user.is_household_admin %}<section><h2>Recurring catch-up decisions</h2>{% for chore in catchups %}<p><a href="{% url 'chores:chore_detail' chore.pk %}">{{ chore.title }} — choose missed occurrences</a></p>{% empty %}<p>No decisions waiting.</p>{% endfor %}</section>
+<section aria-label="Member workload"><h2>Member workload</h2><div class="table-scroll"><table><thead><tr><th>Member</th><th>Low</th><th>Medium</th><th>High</th><th>Total</th></tr></thead><tbody>{% for member in workload %}<tr><th>{{ member.username }}</th><td>{{ member.low }}</td><td>{{ member.medium }}</td><td>{{ member.high }}</td><td>{{ member.total }}</td></tr>{% endfor %}</tbody></table></div></section>{% endif %}
+<p><a href="{% url 'chores:schedule' %}">Preview the next month’s recurring schedule</a> · <a href="{% url 'chores:history' %}">View completion history</a></p>
+</div>

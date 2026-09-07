@@ -4,6 +4,7 @@ from . import chore_views
 
 app_name = "chores"
 urlpatterns = [
+    path("dashboard/", views.dashboard, name="dashboard"),
     path("schedule/", chore_views.schedule, name="schedule"),
     path("chores/bulk/", chore_views.bulk_create, name="bulk_create"),
     path("history/", chore_views.history, name="history"),

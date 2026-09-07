@@ -72,13 +72,15 @@ Starting point: Django is installed, the `config` project exists, and the `chore
 
 ## 6. Finish the member and admin dashboards
 
-- [ ] Build member sections for Today, Upcoming, Overdue, and Pending approval, plus Today/Upcoming/Overdue counts. Move completed chores to history.
-- [ ] Add member category/priority filters and connect the recurring schedule preview.
-- [ ] Build the separate application admin dashboard with create/assign actions, overdue work, pending approvals, and the count of locked accounts. Link to member management for unlocking.
-- [ ] Show each member's active workload grouped by priority and allow sorting by workload without numeric priority weights.
-- [ ] Use HTMX where useful for filtering and actions, with clear validation, empty states, and responsive layouts.
+- [x] Build member sections for Today, Upcoming, Overdue, and Pending approval, plus Today/Upcoming/Overdue counts. Move completed chores to history.
+- [x] Add member category/priority filters and connect the recurring schedule preview.
+- [x] Build the separate application admin dashboard with create/assign actions, overdue work, pending approvals, and the count of locked accounts. Link to member management for unlocking.
+- [x] Show each member's active workload grouped by priority and allow sorting by workload without numeric priority weights.
+- [x] Use HTMX where useful for filtering and actions, with clear validation, empty states, and responsive layouts.
 
 **Done when:** browser tests cover login, creation/assignment, member viewing/completion, approval/rejection, filters, and workload display at desktop and mobile sizes.
+
+**Verification:** 46 backend tests and 2 Chromium UI tests pass. Desktop (1280px) and mobile (390px) flows cover login, assignment, completion, rejection/resubmission, approval, filters, and workload. Screenshots are saved under .artifacts/.
 
 ## 7. Deliver notifications and scheduled reminders
 
