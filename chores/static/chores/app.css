@@ -25,4 +25,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid #a55220; outline-
 article form { margin-top: .75rem; }
 article h2, [role="status"] { overflow-wrap: anywhere; }
 .errorlist { color: #9a291f; }
+select, textarea { width: 100%; max-width: 100%; padding: .65rem; font: inherit; }
+input[type="checkbox"] { width: auto; }
+.cards { margin-top: 1.5rem; }
 @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } main { padding-top: 2rem; } nav { gap: 1rem; } }

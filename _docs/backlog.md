@@ -31,13 +31,15 @@ Starting point: Django is installed, the `config` project exists, and the `chore
 
 ## 3. Build chore creation and assignment
 
-- [ ] Build admin list, create, detail, edit, duplicate, and delete pages with title search.
-- [ ] Support title, optional description, predefined category, low/medium/high priority, one assignee, date-only due date, and photo/approval requirements.
-- [ ] Require an edit note for changes to due date, priority, or assignee. Record the note in audit history and create the member notification containing it.
-- [ ] Duplicate chore details and recurrence settings, requiring a new assignee and due date. Preserve history on deletion, mark the chore deleted, and provide no restore action.
-- [ ] Add a member list/detail page limited to their own assigned chores. Members cannot edit, delete, reassign, reject, or claim chores.
+- [x] Build admin list, create, detail, edit, duplicate, and delete pages with title search.
+- [x] Support title, optional description, predefined category, low/medium/high priority, one assignee, date-only due date, and photo/approval requirements.
+- [x] Require an edit note for changes to due date, priority, or assignee. Record the note in audit history and create the member notification containing it.
+- [x] Duplicate chore details and recurrence settings, requiring a new assignee and due date. Preserve history on deletion, mark the chore deleted, and provide no restore action.
+- [x] Add a member list/detail page limited to their own assigned chores. Members cannot edit, delete, reassign, reject, or claim chores.
 
 **Done when:** an admin can create and assign a chore that only its assigned member can access; tests cover permissions, required edit notes, duplication, deletion, and audit events.
+
+**Verification:** 34 tests pass, including assignment ownership, required edit notes, notifications, independent duplication, search, deletion, and preserved audit history.
 
 ## 4. Implement completion, approval, and history
 

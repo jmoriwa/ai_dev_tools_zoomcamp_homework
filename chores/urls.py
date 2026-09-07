@@ -1,8 +1,15 @@
 from django.urls import path
 from . import views
+from . import chore_views
 
 app_name = "chores"
 urlpatterns = [
+    path("chores/", chore_views.chore_list, name="chore_list"),
+    path("chores/new/", chore_views.chore_form, name="chore_create"),
+    path("chores/<int:pk>/", chore_views.chore_detail, name="chore_detail"),
+    path("chores/<int:pk>/edit/", chore_views.chore_form, name="chore_edit"),
+    path("chores/<int:pk>/duplicate/", chore_views.chore_form, {"duplicate": True}, name="chore_duplicate"),
+    path("chores/<int:pk>/delete/", chore_views.chore_delete, name="chore_delete"),
     path("", views.home, name="home"),
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),

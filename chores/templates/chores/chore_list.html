@@ -1,0 +1,12 @@
+{% extends 'chores/base.html' %}
+{% block content %}
+<h1>Chores</h1>
+{% if user.is_household_admin %}
+<p><a href="{% url 'chores:chore_create' %}">Create chore</a></p>
+<form method="get"><label for="search">Search by title</label><input id="search" name="q" value="{{ request.GET.q }}"><button>Search</button></form>
+{% endif %}
+<div class="cards">
+{% for chore in chores %}<article><h2><a href="{% url 'chores:chore_detail' chore.pk %}">{{ chore.title }}</a></h2><p>{{ chore.assignee }} · {{ chore.due_date }}</p><p>{{ chore.get_category_display }} · {{ chore.get_priority_display }} · {{ chore.get_status_display }}</p></article>
+{% empty %}<p>No chores found.</p>{% endfor %}
+</div>
+{% endblock %}
