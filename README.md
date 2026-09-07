@@ -65,6 +65,22 @@ See the [uv project guide](https://docs.astral.sh/uv/guides/projects/) for detai
 
 ## Checks
 
+Swagger is available at `/api/docs/`; the OpenAPI schema is `/api/schema/`.
+Swagger assets are installed locally. Every API operation documents request and
+response examples, including validation errors. GET and DELETE have no body;
+their header/path/query examples specify the request instead.
+
+**The API is an unauthenticated local demo.** Supply `X-Demo-Actor: 1` to assert
+the acting user ID. Any caller can impersonate any user; browser login does not
+protect these endpoints. The header exists to demonstrate shared business rules
+and audit attribution, and must not be mistaken for authentication. Use the member
+list to find IDs. Keep the server bound to localhost.
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/api/chores/ -Headers @{'X-Demo-Actor'='1'}
+uv run python manage.py spectacular --file .artifacts/schema.yaml --validate --fail-on-warn
+```
+
 The development server now runs ASGI through Daphne (`uv run python manage.py
 runserver`). Keep one server process: the in-memory Channels layer cannot send
 events between processes. Browser sessions subscribe only to their own updates;

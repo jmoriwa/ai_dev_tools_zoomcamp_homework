@@ -107,14 +107,18 @@ Starting point: Django is installed, the `config` project exists, and the `chore
 
 ## 9. Expose and document the REST API
 
-- [ ] Add Django REST Framework endpoints for the planned household operations, reusing the business logic used by the pages.
-- [ ] Cover member management, chores/actions, recurring schedules, dashboards/workload, completion review, history, and notifications/reminder controls.
-- [ ] Add OpenAPI/Swagger documentation with request/response schemas and example request and response payloads for every endpoint, including validation errors where relevant.
-- [ ] Keep API authentication out of scope as specified. Explicitly document the unauthenticated local-demo boundary; do not describe API callers as protected by the browser's member permissions.
+- [x] Add Django REST Framework endpoints for the planned household operations, reusing the business logic used by the pages.
+- [x] Cover member management, chores/actions, recurring schedules, dashboards/workload, completion review, history, and notifications/reminder controls.
+- [x] Add OpenAPI/Swagger documentation with request/response schemas and example request and response payloads for every endpoint, including validation errors where relevant.
+- [x] Keep API authentication out of scope as specified. Explicitly document the unauthenticated local-demo boundary; do not describe API callers as protected by the browser's member permissions.
 
 **Done when:** API tests exercise the main operations and invalid transitions, Swagger covers every endpoint, and documented examples match actual responses.
 
 **Decision before implementation:** specify how local demo API calls identify the acting user for business rules and audit records without claiming that supplied identity is authenticated.
+
+**Implemented decision:** X-Demo-Actor asserts the acting user ID without authenticating it. Swagger and README explicitly document impersonation and the localhost-only demo boundary.
+
+**Verification:** 61 backend/API/WebSocket tests pass. Tests exercise all operation families and check schema/example coverage for every API operation; OpenAPI validation passes with no warnings.
 
 ## 10. Package and verify the end-to-end demo
 

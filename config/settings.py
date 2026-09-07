@@ -33,6 +33,9 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]"]
 
 INSTALLED_APPS = [
     "daphne",
+    "rest_framework",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
     'chores.apps.ChoresConfig',
     "django.contrib.admin",
     "django.contrib.auth",
@@ -140,3 +143,18 @@ AUTHENTICATION_BACKENDS = ["chores.accounts.PINBackend", "django.contrib.auth.ba
 LOGIN_URL = "chores:login"
 ASGI_APPLICATION = "config.asgi.application"
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_PERMISSION_CLASSES": [],
+    "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
+}
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Household chores — unauthenticated local demo",
+    "DESCRIPTION": "Local use only. X-Demo-Actor is a supplied actor ID, NOT authentication. Any caller can impersonate any user including admins. Browser session permissions do not secure this API. Never expose this demo API to a network. GET/DELETE have no request body; header/path/query examples are provided. IDs refer to seeded demo records; inspect lists for actual IDs.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+}

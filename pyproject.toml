@@ -8,6 +8,9 @@ dependencies = [
     "channels>=4.3.2",
     "daphne>=4.2.3",
     "Django==5.2.17",
+    "djangorestframework>=3.18.1",
+    "drf-spectacular>=0.30.0",
+    "drf-spectacular-sidecar>=2026.9.1",
     "pillow>=12.3.0",
 ]
 
