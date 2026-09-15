@@ -1,0 +1,364 @@
+openapi: 3.1.0
+info:
+  title: Littleboard API
+  version: 1.0.0
+  description: |
+    Backend contract derived from frontend/api.js and its callers/tests.
+    One board, fixed statuses and demo assignees, and no authentication.
+    The initial backend uses an in-memory database; data resets on restart.
+    All mutations are atomic: failed requests leave stored data unchanged.
+    IDs are opaque strings (including seed IDs such as task-1), not necessarily UUIDs.
+    Task and comment text is plain text. The client computes overdue indicators.
+servers:
+  - url: http://localhost:8000/api
+tags:
+  - name: Tasks
+  - name: Comments
+paths:
+  /tasks:
+    get:
+      tags: [Tasks]
+      operationId: listTasks
+      summary: List active or archived tasks
+      description: |
+        Maps to api.list. Returns an array in manual board order; filtering
+        preserves relative order. Group by status to obtain each column's order.
+        Filters combine with AND. Search is a trimmed, case-insensitive title
+        substring. Empty assignee and priority filters mean no filtering.
+        No pagination. Archived tasks are excluded unless archived=true.
+      parameters:
+        - name: archived
+          in: query
+          schema: {type: boolean, default: false}
+        - name: search
+          in: query
+          schema: {type: string, default: ''}
+        - name: assignee
+          in: query
+          schema:
+            $ref: '#/components/schemas/OptionalAssignee'
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: ['', Low, Medium, High]
+            default: ''
+      responses:
+        '200':
+          description: Tasks in manual order
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/Task'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+    post:
+      tags: [Tasks]
+      operationId: createTask
+      summary: Create a task
+      description: |
+        Maps to api.create. Trims the title, generates an ID, sets archived=false
+        and comments=[], and appends the task to the end of its column.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TaskCreate'}
+      responses:
+        '201': {$ref: '#/components/responses/TaskResult'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /tasks/{taskId}:
+    parameters:
+      - {$ref: '#/components/parameters/TaskId'}
+    patch:
+      tags: [Tasks]
+      operationId: updateTask
+      summary: Update task fields
+      description: |
+        Maps to api.update. Only supplied fields change; an empty object is a
+        no-op. Trims the title. Archived tasks must remain Done. Updating status
+        retains the task's position in the global ordered list; use moveTask
+        to explicitly position it within a destination column.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TaskUpdate'}
+      responses:
+        '200': {$ref: '#/components/responses/TaskResult'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+    delete:
+      tags: [Tasks]
+      operationId: deleteTask
+      summary: Permanently delete a task and its comments
+      description: Maps to api.remove. Works for active and archived tasks.
+      responses:
+        '200':
+          description: Task deleted; preserves the mock's boolean result
+          content:
+            application/json:
+              schema: {type: boolean, const: true}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /tasks/{taskId}/move:
+    parameters:
+      - {$ref: '#/components/parameters/TaskId'}
+    post:
+      tags: [Tasks]
+      operationId: moveTask
+      summary: Move a task between columns or reorder it
+      description: |
+        Maps to api.move. The task must be active. If beforeId is omitted or
+        null, append to the destination column. Otherwise insert immediately
+        before that active task, which must already have the destination status.
+        beforeId equal to taskId is a no-op, including no status change, after
+        validating the status and checking that the source task is active.
+        A missing source or target returns 404; an archived source or an invalid
+        target (archived or in another column) returns 409.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [status]
+              properties:
+                status: {$ref: '#/components/schemas/Status'}
+                beforeId:
+                  type: [string, 'null']
+                  minLength: 1
+                  default: null
+      responses:
+        '200': {$ref: '#/components/responses/TaskResult'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /tasks/{taskId}/archive:
+    parameters:
+      - {$ref: '#/components/parameters/TaskId'}
+    patch:
+      tags: [Tasks]
+      operationId: archiveTask
+      summary: Archive or restore a completed task
+      description: |
+        Maps to api.archive. The task must be Done for either operation.
+        archived=false restores it to Done. Repeating the current value is
+        a no-op. Preserve comments and the task's stored position.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                archived: {type: boolean, default: true}
+      responses:
+        '200': {$ref: '#/components/responses/TaskResult'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /tasks/{taskId}/comments:
+    parameters:
+      - {$ref: '#/components/parameters/TaskId'}
+    post:
+      tags: [Comments]
+      operationId: createComment
+      summary: Add a comment and return the updated task
+      description: |
+        Maps to api.saveComment without a comment ID. Generates a comment ID,
+        trims text, and appends the comment. Allowed on archived tasks too.
+      requestBody:
+        $ref: '#/components/requestBodies/CommentInput'
+      responses:
+        '201': {$ref: '#/components/responses/TaskResult'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /tasks/{taskId}/comments/{commentId}:
+    parameters:
+      - {$ref: '#/components/parameters/TaskId'}
+      - {$ref: '#/components/parameters/CommentId'}
+    put:
+      tags: [Comments]
+      operationId: updateComment
+      summary: Replace a comment's name and text
+      description: |
+        Maps to api.saveComment with a comment ID. Both fields are required.
+        Trims text and preserves comment ID and order. Allowed on archived tasks.
+        Returns 404 if the task or its comment does not exist.
+      requestBody:
+        $ref: '#/components/requestBodies/CommentInput'
+      responses:
+        '200': {$ref: '#/components/responses/TaskResult'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+    delete:
+      tags: [Comments]
+      operationId: deleteComment
+      summary: Delete a comment and return the updated task
+      description: |
+        Maps to api.deleteComment. Allowed on archived tasks. A missing comment
+        is a successful no-op, matching the mock; a missing task returns 404.
+      responses:
+        '200': {$ref: '#/components/responses/TaskResult'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+components:
+  parameters:
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      schema: {type: string, minLength: 1}
+    CommentId:
+      name: commentId
+      in: path
+      required: true
+      schema: {type: string, minLength: 1}
+  requestBodies:
+    CommentInput:
+      required: true
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/CommentInput'}
+  responses:
+    TaskResult:
+      description: Complete task including comments in insertion order
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Task'}
+    NotFound:
+      description: Task or referenced comment/target task not found
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+          example: {detail: 'Task not found.'}
+    Conflict:
+      description: Requested operation conflicts with the task's current state
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+          example: {detail: 'Only completed tasks can be archived.'}
+    ValidationError:
+      description: Invalid request body, path parameter, or query parameter
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [detail]
+            properties:
+              detail:
+                type: array
+                items:
+                  type: object
+                  required: [loc, msg, type]
+                  properties:
+                    loc:
+                      type: array
+                      items:
+                        anyOf:
+                          - {type: string}
+                          - {type: integer}
+                    msg: {type: string}
+                    type: {type: string}
+  schemas:
+    Status:
+      type: string
+      enum: [Backlog, To Do, In Progress, Done]
+    Priority:
+      type: string
+      enum: [Low, Medium, High]
+    Assignee:
+      type: string
+      enum: [Alex Morgan, Jamie Chen, Sam Rivera, Taylor Brooks]
+    OptionalAssignee:
+      type: string
+      enum: ['', Alex Morgan, Jamie Chen, Sam Rivera, Taylor Brooks]
+      default: ''
+      description: Empty string means unassigned; null is not accepted.
+    DueDate:
+      description: |
+        Empty string means no due date; null is not accepted. Nonempty values
+        must be valid calendar dates in YYYY-MM-DD form.
+      oneOf:
+        - {type: string, const: ''}
+        - type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+      default: ''
+    NonBlankText:
+      type: string
+      minLength: 1
+      pattern: '\S'
+      description: Must contain a non-whitespace character; trimmed before storage.
+    TaskCreate:
+      type: object
+      additionalProperties: false
+      required: [title, status, priority]
+      properties:
+        title: {$ref: '#/components/schemas/NonBlankText'}
+        description: {type: string, default: ''}
+        status: {$ref: '#/components/schemas/Status'}
+        priority: {$ref: '#/components/schemas/Priority'}
+        assignee: {$ref: '#/components/schemas/OptionalAssignee'}
+        dueDate: {$ref: '#/components/schemas/DueDate'}
+    TaskUpdate:
+      type: object
+      additionalProperties: false
+      description: Omitted fields retain their values; null is not accepted.
+      properties:
+        title: {$ref: '#/components/schemas/NonBlankText'}
+        description: {type: string}
+        status: {$ref: '#/components/schemas/Status'}
+        priority: {$ref: '#/components/schemas/Priority'}
+        assignee: {$ref: '#/components/schemas/OptionalAssignee'}
+        dueDate: {$ref: '#/components/schemas/DueDate'}
+    Task:
+      type: object
+      additionalProperties: false
+      required: [id, title, description, status, priority, assignee, dueDate, archived, comments]
+      properties:
+        id: {type: string, minLength: 1}
+        title: {$ref: '#/components/schemas/NonBlankText'}
+        description: {type: string}
+        status: {$ref: '#/components/schemas/Status'}
+        priority: {$ref: '#/components/schemas/Priority'}
+        assignee: {$ref: '#/components/schemas/OptionalAssignee'}
+        dueDate: {$ref: '#/components/schemas/DueDate'}
+        archived: {type: boolean}
+        comments:
+          type: array
+          items: {$ref: '#/components/schemas/Comment'}
+      example:
+        id: task-1
+        title: Explore onboarding ideas
+        description: Collect a few ideas for a warmer first-time experience.
+        status: Backlog
+        priority: Low
+        assignee: Jamie Chen
+        dueDate: ''
+        archived: false
+        comments: []
+    CommentInput:
+      type: object
+      additionalProperties: false
+      required: [name, text]
+      properties:
+        name: {$ref: '#/components/schemas/Assignee'}
+        text: {$ref: '#/components/schemas/NonBlankText'}
+    Comment:
+      type: object
+      additionalProperties: false
+      required: [id, name, text]
+      properties:
+        id: {type: string, minLength: 1}
+        name: {$ref: '#/components/schemas/Assignee'}
+        text: {$ref: '#/components/schemas/NonBlankText'}
+    Error:
+      type: object
+      required: [detail]
+      properties:
+        detail: {type: string}
