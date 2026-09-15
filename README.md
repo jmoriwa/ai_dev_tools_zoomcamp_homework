@@ -1,6 +1,20 @@
 # AI Dev Tools Zoomcamp
 
-Homework projects share this Git repository, with each project in its own folder.
+This repository contains my homework projects for [AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp), a free course run by DataTalks.Club on building software with AI developer tools. Each homework project lives in its own folder.
+
+## Course context
+
+The course starts with AI-native developer workflows: turning a raw idea into a specification, giving coding agents the right context, and verifying what they build. It then covers full-stack development, deployment, DevOps, and observability with AI coding assistants.
+
+The accompanying article series provides background for the coursework:
+
+- Part 1: [AI-Native Development: Specifications, Loop and Graph Engineering](https://alexeyondata.substack.com/p/ai-native-development-specifications)
+- Part 2: [Build and Ship a Full-Stack App with AI Coding Assistants](https://alexeyondata.substack.com/p/build-and-ship-a-full-stack-app-with)
+- Part 3: [Deploy a Full-Stack App with AI Coding Assistants](https://alexeyondata.substack.com/p/deploy-a-full-stack-app-with-ai-coding)
+- Part 4: [DevOps and Observability for an AI-Built App](https://aishippingblog.com/p/devops-and-observability-for-an-ai)
+- Part 5: TBA (as listed in the provided course article)
+
+## Homework projects
 
 | Homework | Folder | Description |
 | --- | --- | --- |
