@@ -8,12 +8,16 @@ from openapi_spec_validator import validate
 
 
 @pytest.fixture
-def client():
+def client(database_url):
     from littleboard.main import create_app
-    from littleboard.repository import MemoryRepository
+    from littleboard.database import SQLAlchemyRepository
 
-    with TestClient(create_app(MemoryRepository())) as client:
-        yield client
+    repository = SQLAlchemyRepository(database_url)
+    try:
+        with TestClient(create_app(repository)) as client:
+            yield client
+    finally:
+        repository.close()
 
 
 def create(client, **changes):
@@ -176,9 +180,9 @@ def test_contract_and_runtime_routes(client):
     Draft202012Validator(schema, format_checker=FormatChecker()).validate(create(client))
 
 
-def test_default_app_has_independent_demo_data():
+def test_separate_databases_have_independent_demo_data(tmp_path):
     from littleboard.main import create_app
-    with TestClient(create_app()) as first, TestClient(create_app()) as second:
+    with TestClient(create_app(database_url='sqlite:///' + (tmp_path / 'first.db').as_posix())) as first, TestClient(create_app(database_url='sqlite:///' + (tmp_path / 'second.db').as_posix())) as second:
         active = first.get('/api/tasks').json()
         assert {t['status'] for t in active} == {'Backlog', 'To Do', 'In Progress', 'Done'}
         assert any(t['comments'] for t in active)

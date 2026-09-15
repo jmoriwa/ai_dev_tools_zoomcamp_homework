@@ -1,11 +1,15 @@
 from typing import Annotated, Literal
+from contextlib import asynccontextmanager
+import os
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, FastAPI, Path, Request
 from fastapi.responses import JSONResponse
 
 from .models import ArchiveInput, CommentInput, Error, MoveInput, OptionalAssignee, PriorityFilter, Task, TaskCreate, TaskUpdate
-from .repository import Conflict, MemoryRepository, NotFound, TaskRepository
+from .repository import Conflict, NotFound, TaskRepository
 from .seed import demo_tasks
+from .database import SQLAlchemyRepository
 
 
 def get_repository(request: Request) -> TaskRepository:
@@ -66,9 +70,21 @@ def delete_comment(taskId: Id, commentId: Id, repository: Repository):
     return repository.delete_comment(taskId, commentId)
 
 
-def create_app(repository: TaskRepository | None = None) -> FastAPI:
-    app = FastAPI(title='Littleboard API', version='1.0.0')
-    app.state.repository = repository if repository is not None else MemoryRepository(demo_tasks())
+def create_app(repository: TaskRepository | None = None, *, database_url: str | None = None) -> FastAPI:
+    @asynccontextmanager
+    async def lifespan(app):
+        owned = repository is None
+        app.state.repository = repository if repository is not None else SQLAlchemyRepository(
+            database_url or os.environ.get('DATABASE_URL') or
+            'sqlite:///' + (Path(__file__).resolve().parents[1] / 'littleboard.db').as_posix(),
+            demo_tasks())
+        try:
+            yield
+        finally:
+            if owned:
+                app.state.repository.close()
+
+    app = FastAPI(title='Littleboard API', version='1.0.0', lifespan=lifespan)
 
     @app.exception_handler(NotFound)
     async def not_found(request: Request, exc: NotFound):
