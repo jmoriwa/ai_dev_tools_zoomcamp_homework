@@ -35,5 +35,6 @@ default to empty strings. Validation errors use HTTP 422 with a `detail` array;
 missing resources use 404 and state conflicts use 409 with a `detail` string.
 The future HTTP adapter should turn these responses into user-facing errors.
 
-The frontend still uses localStorage. The contract targets a FastAPI backend
-with an initial replaceable in-memory database; it does not add HTTP integration.
+The [FastAPI backend](backend/README.md) implements this contract with a
+replaceable in-memory database. The frontend still uses localStorage;
+HTTP integration is a separate step.
